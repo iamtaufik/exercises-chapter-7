@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Simple Chat</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div id="User-now" class="User-now"></div>
+    <!-- form pengiriman pesan -->
+    <form id="form" action="">
+        <input type="text" id="input" placeholder="Masukkan pesan...">
+        <button>Kirim</button>
+    </form>
+
+    <!-- menampilkan pesan -->
+    <ul id="messages"></ul>
+
+    <!-- include socket.io -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        let socket = io();
+
+        let name = prompt('jenengmu : ');
+        let user = document.getElementById('User-now');
+        let form = document.getElementById('form');
+        let input = document.getElementById('input');
+        let messages = document.getElementById('messages');
+
+        user.textContent = `Ini adalah ${name}`;
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // kirim pesan jika input tidak kosong
+            if (input.value) {
+                // emit pesan kedalam topik 'chat message'
+                console.log('client', input.value);
+                socket.emit('chat message', {
+                    name,
+                    messages:input.value
+                });
+            }
+            input.value = '';
+        });
+
+        socket.on('chat message', msg => {
+            let item = document.createElement('li');
+            if (msg.name === name) {
+                item.classList.add('a');
+            } else {
+                item.classList.add('b');
+            }
+            let userName = document.createElement('span');
+            userName.classList.add('userName');
+            userName.textContent = msg.name;
+            item.appendChild(userName);
+
+            let messageContent = document.createElement('span');
+            messageContent.textContent = `: ${msg.messages}`;
+            item.appendChild(messageContent);
+
+            messages.appendChild(item);
+        });
+    </script>
+</body>
+</html>
