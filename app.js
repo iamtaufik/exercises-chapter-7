@@ -15,8 +15,8 @@ app.get('/chat', (req, res) => {
 
 io.on('connection', (client) => {
   console.log('New user connected');
-  client.on('chat message', (msg) => {
-    io.emit('chat message', msg);
+  client.on('chat message', (msg,name) => {
+    io.emit('chat message', msg,name);
   });
 });
 
